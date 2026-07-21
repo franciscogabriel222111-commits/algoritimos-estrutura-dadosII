@@ -32,22 +32,23 @@ Aresta arestas[M] = {
 int idx(char c) { return c - 'A'; }
 
 int pai[N];
-int encontrar(int x) { while (pai[x] != x) x = pai[x]; return x; }
-int unir(int x, int y) {
+int encontrar(int x) { while (pai[x] != x) x = pai[x]; return x; }// encontra o representante do conjunto de x
+int unir(int x, int y) {// une os conjuntos de x e y, se forem diferentes
     int rx = encontrar(x), ry = encontrar(y);
-    if (rx == ry) return 0;
+    if (rx == ry) return 0;// se ja estao no mesmo conjunto, nao faz nada
     pai[rx] = ry;
     return 1;
 }
 
-void ordenar(Aresta v[], int n) {
-    for (int i = 0; i < n - 1; i++)
-        for (int j = 0; j < n - 1 - i; j++)
-            if (v[j].peso > v[j + 1].peso) {
-                Aresta tmp = v[j]; v[j] = v[j + 1]; v[j + 1] = tmp;
+void ordenar(Aresta v[], int n) {// ordena as arestas por peso crescente usando bubble sort
+    for (int i = 0; i < n - 1; i++)// percorre todas as arestas
+        for (int j = 0; j < n - 1 - i; j++)// percorre as arestas restantes
+            if (v[j].peso > v[j + 1].peso) {// se a aresta atual tem peso maior que a proxima, troca de posicao
+                Aresta tmp = v[j]; v[j] = v[j + 1]; v[j + 1] = tmp;// troca de posicao
             }
 }
 
+// funcao principal
 int main(void) {
     ordenar(arestas, M);
 
@@ -56,26 +57,26 @@ int main(void) {
     printf("=========================================================\n\n");
 
     printf("Lista de arestas ordenada (crescente por peso):\n   ");
-    for (int i = 0; i < M; i++)
+    for (int i = 0; i < M; i++)// percorre todas as arestas para imprimir as arestas ordenadas
         printf("%c-%c(%d) ", arestas[i].de, arestas[i].para, arestas[i].peso);
     printf("\n\n");
 
-    for (int i = 0; i < N; i++) pai[i] = i;
+    for (int i = 0; i < N; i++) pai[i] = i;// inicializa o vetor de pais, cada vertice e seu proprio representante
 
     printf("Analise das primeiras 12 arestas da lista ordenada:\n\n");
     int custoTotal = 0, arestasAGM = 0;
     int limite = 12;
-    for (int i = 0; i < limite; i++) {
+    for (int i = 0; i < limite; i++) {// percorre as 12 primeiras arestas para decidir se inclui ou rejeita cada aresta
         int u = idx(arestas[i].de), v = idx(arestas[i].para);
         printf("Rodada %2d: aresta %c-%c (peso %d)\n", i + 1, arestas[i].de, arestas[i].para, arestas[i].peso);
         printf("           componente(%c) = %c , componente(%c) = %c => ",
                arestas[i].de, nomes[encontrar(u)], arestas[i].para, nomes[encontrar(v)]);
 
-        if (unir(u, v)) {
+        if (unir(u, v)) {// se os representantes de u e v sao diferentes, inclui a aresta na AGM
             printf("componentes distintas: FUNDE os conjuntos (aresta INCLUIDA)\n");
             custoTotal += arestas[i].peso;
             arestasAGM++;
-        } else {
+        } else {// se os representantes de u e v sao iguais, rejeita a aresta (formaria ciclo)
             printf("mesma componente: aresta REJEITADA (formaria ciclo)\n");
         }
         printf("\n");
@@ -87,17 +88,17 @@ int main(void) {
     printf("Arestas incluidas ate agora: %d de %d necessarias\n", arestasAGM, N - 1);
     printf("Custo parcial acumulado: %d\n\n", custoTotal);
 
-    if (arestasAGM < N - 1) {
+    if (arestasAGM < N - 1) {// se ainda nao foram incluídas N-1 arestas, a AGM nao esta completa
         printf("A AGM ainda nao esta completa; continuando com as arestas restantes\n");
         printf("da lista ordenada (posicoes 13 a %d) ate fechar %d arestas:\n\n", M, N - 1);
-        for (int i = limite; i < M && arestasAGM < N - 1; i++) {
+        for (int i = limite; i < M && arestasAGM < N - 1; i++) {// percorre as arestas restantes para decidir se inclui ou rejeita cada aresta
             int u = idx(arestas[i].de), v = idx(arestas[i].para);
             printf("Rodada %2d: aresta %c-%c (peso %d) ... ", i + 1, arestas[i].de, arestas[i].para, arestas[i].peso);
-            if (unir(u, v)) {
+            if (unir(u, v)) {// se os representantes de u e v sao diferentes, inclui a aresta na AGM
                 printf("INCLUIDA\n");
                 custoTotal += arestas[i].peso;
                 arestasAGM++;
-            } else {
+            } else {// se os representantes de u e v sao iguais, rejeita a aresta (formaria ciclo)
                 printf("REJEITADA (ciclo)\n");
             }
         }

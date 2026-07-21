@@ -31,10 +31,10 @@ int custo[N][N] = {
 
 int idx(char c) { return c - 'A'; }
 
-int main(void) {
-    int naAGM[N] = {0};
-    int chave[N], pred[N];
-    for (int i = 0; i < N; i++) { chave[i] = INF; pred[i] = -1; }
+int main(void) {// funcao principal
+    int naAGM[N] = {0};// vetor que indica se o vertice ja esta na AGM
+    int chave[N], pred[N];// vetor que guarda a chave (peso minimo) e o predecessor de cada vertice
+    for (int i = 0; i < N; i++) { chave[i] = INF; pred[i] = -1; }// inicializa chaves como infinito e predecessores como -1
 
     int raiz = idx('A');
     chave[raiz] = 0;
@@ -47,20 +47,20 @@ int main(void) {
     for (int cont = 0; cont < N; cont++) {
         /* escolhe vertice fora da AGM com menor chave */
         int min = INF, u = -1;
-        for (int v = 0; v < N; v++)
-            if (!naAGM[v] && chave[v] < min) { min = chave[v]; u = v; }
+        for (int v = 0; v < N; v++)// percorre todos os vertices
+            if (!naAGM[v] && chave[v] < min) { min = chave[v]; u = v; }// atualiza o vertice com menor chave
 
         naAGM[u] = 1;
         printf("--- Iteracao %d: adiciona %c a AGM ", cont + 1, nomes[u]);
-        if (pred[u] != -1) {
+        if (pred[u] != -1) {// se nao for a raiz, mostra a aresta escolhida e o peso
             printf("(aresta escolhida: %c-%c, peso %d)\n", nomes[pred[u]], nomes[u], chave[u]);
             custoTotal += chave[u];
-        } else {
+        } else {// se for a raiz, apenas indica que e a raiz inicial
             printf("(raiz inicial)\n");
         }
 
-        for (int v = 0; v < N; v++) {
-            if (custo[u][v] != 0 && !naAGM[v] && custo[u][v] < chave[v]) {
+        for (int v = 0; v < N; v++) {// percorre todos os vertices para atualizar as chaves dos vizinhos de u
+            if (custo[u][v] != 0 && !naAGM[v] && custo[u][v] < chave[v]) {// se v e vizinho de u, nao esta na AGM e o peso da aresta e menor que a chave atual de v
                 printf("   atualiza chave[%c]: %d -> %d (pred=%c)\n",
                        nomes[v], chave[v] == INF ? -1 : chave[v], custo[u][v], nomes[u]);
                 chave[v] = custo[u][v];
@@ -73,8 +73,8 @@ int main(void) {
     printf("=========================================================\n");
     printf(" ARESTAS DA ARVORE GERADORA MINIMA\n");
     printf("=========================================================\n");
-    for (int i = 0; i < N; i++)
-        if (pred[i] != -1)
+    for (int i = 0; i < N; i++)// percorre todos os vertices para imprimir as arestas da AGM
+        if (pred[i] != -1)// se o vertice nao for a raiz, imprime a aresta e o peso
             printf("   %c - %c   (peso %d)\n", nomes[pred[i]], nomes[i], chave[i]);
 
     printf("\nCusto total acumulado da rede: %d\n", custoTotal);
